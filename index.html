@@ -21,25 +21,50 @@
     const isAndroid = /android/i.test(userAgent);
     const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
 
-    const appLink = "hoults://open"; // must match your manifest + intent-filter
+    const appLink = "hoults://open";
     const androidStore = "https://play.google.com/store/apps/details?id=com.hoults";
     const iosStore = "https://apps.apple.com/us/app/hoults-removals/id1560826970";
     const websiteFallback = "https://www.hoults.co.uk/";
 
-    // Attempt to open the app
-    window.location = appLink;
+    let timeout;
 
-    // If app doesn't open, redirect to store or website
-    setTimeout(() => {
-      if (isAndroid) {
-        window.location = androidStore;
-      } else if (isIOS) {
-        window.location = iosStore;
+    function openApp() {
+      // For Android and iOS, try to open app using iframe (better support)
+      if (isAndroid || isIOS) {
+        const iframe = document.createElement('iframe');
+        iframe.style.border = 'none';
+        iframe.style.width = '1px';
+        iframe.style.height = '1px';
+        iframe.style.position = 'absolute';
+        iframe.style.top = '0';
+        iframe.style.left = '0';
+        iframe.src = appLink;
+        document.body.appendChild(iframe);
       } else {
-        // Desktop or other devices fallback to website
-        window.location = websiteFallback;
+        // For desktop and others, just redirect to website fallback immediately
+        window.location.href = websiteFallback;
       }
-    }, 2000);
+    }
+
+    function fallback() {
+      if (isAndroid) {
+        window.location.href = androidStore;
+      } else if (isIOS) {
+        window.location.href = iosStore;
+      } else {
+        window.location.href = websiteFallback;
+      }
+    }
+
+    openApp();
+
+    // After 2 seconds, if the app didn’t open, redirect to fallback
+    timeout = setTimeout(fallback, 2000);
+
+    // If user returns (app opened and back), clear the timeout
+    window.addEventListener('pagehide', () => {
+      clearTimeout(timeout);
+    });
   </script>
 </body>
 </html>
