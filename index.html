@@ -8,53 +8,63 @@
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      padding: 50px;
+      padding: 60px 20px;
     }
     button {
-      padding: 15px 30px;
-      font-size: 18px;
-      background-color: #1976d2;
+      background-color: #1976D2;
       color: white;
       border: none;
+      padding: 15px 30px;
+      font-size: 18px;
       border-radius: 8px;
       cursor: pointer;
     }
     button:hover {
-      background-color: #145a9c;
+      background-color: #125a9c;
+    }
+    p {
+      margin-top: 20px;
+      font-size: 16px;
     }
   </style>
 </head>
 <body>
-  <h2>Open Hoults App</h2>
-  <p>If you have the app installed, it will open. Otherwise, you’ll be redirected to the store.</p>
-  <button id="openAppBtn">Launch Hoults App</button>
+  <h2>Open the Hoults App</h2>
+  <button id="openAppBtn">Launch Hoults</button>
+  <p>If the app isn't installed, you'll be redirected to the app store.</p>
 
   <script>
-    document.getElementById('openAppBtn').addEventListener('click', () => {
+    document.getElementById('openAppBtn').addEventListener('click', function () {
       const userAgent = navigator.userAgent || navigator.vendor || window.opera;
       const isAndroid = /android/i.test(userAgent);
       const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
 
-      const appLink = "hoults://open";
+      const androidIntent = "intent://open#Intent;scheme=hoults;package=com.hoults;end";
+      const iosScheme = "hoults://open";
       const androidStore = "https://play.google.com/store/apps/details?id=com.hoults";
       const iosStore = "https://apps.apple.com/us/app/hoults-removals/id1560826970";
-      const websiteFallback = "https://www.hoults.co.uk/";
 
-      const now = new Date().getTime();
-      setTimeout(() => {
-        const later = new Date().getTime();
-        if (later - now < 2000) {
+      const fallbackDelay = 1500;
+      const startTime = new Date().getTime();
+
+      setTimeout(function () {
+        const endTime = new Date().getTime();
+        if (endTime - startTime < fallbackDelay + 500) {
+          // App likely not installed, redirect to store
           if (isAndroid) {
             window.location.href = androidStore;
           } else if (isIOS) {
             window.location.href = iosStore;
-          } else {
-            window.location.href = websiteFallback;
           }
         }
-      }, 4000);
+      }, fallbackDelay);
 
-      window.location.href = appLink;
+      // Attempt to open app
+      if (isAndroid) {
+        window.location = androidIntent;
+      } else if (isIOS) {
+        window.location = iosScheme;
+      }
     });
   </script>
 </body>
