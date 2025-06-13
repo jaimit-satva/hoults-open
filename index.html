@@ -3,67 +3,58 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Opening Hoults App...</title>
+  <title>Open Hoults App</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
       padding: 50px;
     }
+    button {
+      padding: 15px 30px;
+      font-size: 18px;
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #145a9c;
+    }
   </style>
 </head>
 <body>
-  <h2>Opening Hoults App...</h2>
-  <p>If the app doesn't open, you’ll be redirected to the app store or website shortly.</p>
+  <h2>Open Hoults App</h2>
+  <p>If you have the app installed, it will open. Otherwise, you’ll be redirected to the store.</p>
+  <button id="openAppBtn">Launch Hoults App</button>
 
   <script>
-    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-    const isAndroid = /android/i.test(userAgent);
-    const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+    document.getElementById('openAppBtn').addEventListener('click', () => {
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      const isAndroid = /android/i.test(userAgent);
+      const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
 
-    const appLink = "hoults://open";
-    const androidStore = "https://play.google.com/store/apps/details?id=com.hoults";
-    const iosStore = "https://apps.apple.com/us/app/hoults-removals/id1560826970";
-    const websiteFallback = "https://www.hoults.co.uk/";
+      const appLink = "hoults://open";
+      const androidStore = "https://play.google.com/store/apps/details?id=com.hoults";
+      const iosStore = "https://apps.apple.com/us/app/hoults-removals/id1560826970";
+      const websiteFallback = "https://www.hoults.co.uk/";
 
-    let timeout;
+      const now = new Date().getTime();
+      setTimeout(() => {
+        const later = new Date().getTime();
+        if (later - now < 2000) {
+          if (isAndroid) {
+            window.location.href = androidStore;
+          } else if (isIOS) {
+            window.location.href = iosStore;
+          } else {
+            window.location.href = websiteFallback;
+          }
+        }
+      }, 1500);
 
-    function openApp() {
-      // For Android and iOS, try to open app using iframe (better support)
-      if (isAndroid || isIOS) {
-        const iframe = document.createElement('iframe');
-        iframe.style.border = 'none';
-        iframe.style.width = '1px';
-        iframe.style.height = '1px';
-        iframe.style.position = 'absolute';
-        iframe.style.top = '0';
-        iframe.style.left = '0';
-        iframe.src = appLink;
-        document.body.appendChild(iframe);
-      } else {
-        // For desktop and others, just redirect to website fallback immediately
-        window.location.href = websiteFallback;
-      }
-    }
-
-    function fallback() {
-      if (isAndroid) {
-        window.location.href = androidStore;
-      } else if (isIOS) {
-        window.location.href = iosStore;
-      } else {
-        window.location.href = websiteFallback;
-      }
-    }
-
-    openApp();
-
-    // After 2 seconds, if the app didn’t open, redirect to fallback
-    timeout = setTimeout(fallback, 2000);
-
-    // If user returns (app opened and back), clear the timeout
-    window.addEventListener('pagehide', () => {
-      clearTimeout(timeout);
+      window.location.href = appLink;
     });
   </script>
 </body>
