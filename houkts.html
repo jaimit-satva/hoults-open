@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Opening Hoults App...</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Opening Hoults App...</h2>
+  <p>If the app doesn't open, you’ll be redirected to the app store shortly.</p>
+
+  <script>
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    const isAndroid = /android/i.test(userAgent);
+    const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+
+    // Custom deep link for your app
+    const appLink = "hoults://open"; // must match your manifest + intent-filter
+    const androidStore = "https://play.google.com/store/apps/details?id=com.hoults";
+    const iosStore = "https://apps.apple.com/us/app/hoults-removals/id1560826970";
+
+    // Attempt to open the app
+    window.location = appLink;
+
+    // If app doesn't open, redirect to store
+    setTimeout(() => {
+      if (isAndroid) {
+        window.location = androidStore;
+      } else if (isIOS) {
+        window.location = iosStore;
+      }
+    }, 1500);
+  </script>
+</body>
+</html>
